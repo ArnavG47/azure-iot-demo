@@ -1,37 +1,83 @@
-menu "Example Configuration"
+menu "Azure IoT middleware for FreeRTOS Sample Configuration"
 
-    orsource "$IDF_PATH/examples/common_components/env_caps/$IDF_TARGET/Kconfig.env_caps"
-
-    config GPIO_OUTPUT_0
-        int "GPIO output pin 0"
-        range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
-        default 8 if IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32H2 || IDF_TARGET_ESP32C5 || IDF_TARGET_ESP32C61
-        default 8 if IDF_TARGET_ESP32H21
-        default 18
+    config SAMPLE_IOT_WIFI_SSID
+        string "WiFi SSID"
+        default "myssid"
         help
-            GPIO pin number to be used as GPIO_OUTPUT_IO_0.
+            SSID (network name) for the example to connect to.
 
-    config GPIO_OUTPUT_1
-        int "GPIO output pin 1"
-        range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
-        default 9 if IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32H2 || IDF_TARGET_ESP32C5 || IDF_TARGET_ESP32C61
-        default 9 if IDF_TARGET_ESP32H21
-        default 19
+    config SAMPLE_IOT_WIFI_PASSWORD
+        string "WiFi Password"
+        default "mypassword"
         help
-            GPIO pin number to be used as GPIO_OUTPUT_IO_1.
+            WiFi password (WPA or WPA2) for the example to use.
+            Can be left blank if the network has no security set.
 
-    config GPIO_INPUT_0
-        int "GPIO input pin 0"
-        range ENV_GPIO_RANGE_MIN ENV_GPIO_IN_RANGE_MAX
-        default 4
+    choice SAMPLE_IOT_WIFI_SCAN_METHOD
+        prompt "WiFi Scan Method"
+        default SAMPLE_IOT_WIFI_SCAN_METHOD_ALL_CHANNEL
         help
-            GPIO pin number to be used as GPIO_INPUT_IO_0.
+            WiFi scan method:
 
-    config GPIO_INPUT_1
-        int "GPIO input pin 1"
-        range ENV_GPIO_RANGE_MIN ENV_GPIO_IN_RANGE_MAX
-        default 5
+            If "Fast" is selected, scan will end after finding an SSID match.
+
+            If "All Channel" is selected, scan will end after scanning all channels.
+
+        config SAMPLE_IOT_WIFI_SCAN_METHOD_FAST
+            bool "Fast"
+        config SAMPLE_IOT_WIFI_SCAN_METHOD_ALL_CHANNEL
+            bool "All Channel"
+    endchoice
+
+    menu "WiFi Scan threshold"
+        config SAMPLE_IOT_WIFI_SCAN_RSSI_THRESHOLD
+            int "WiFi minimum RSSI"
+            range -127 0
+            default -127
+            help
+                The minimum RSSI to accept in the scan mode.
+
+        choice SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD
+            prompt "WiFi Scan auth mode threshold"
+            default SAMPLE_IOT_WIFI_AUTH_OPEN
+            help
+                The weakest authmode to accept in the scan mode.
+
+            config SAMPLE_IOT_WIFI_AUTH_OPEN
+                bool "OPEN"
+            config SAMPLE_IOT_WIFI_AUTH_WEP
+                bool "WEP"
+            config SAMPLE_IOT_WIFI_AUTH_WPA_PSK
+                bool "WPA PSK"
+            config SAMPLE_IOT_WIFI_AUTH_WPA2_PSK
+                bool "WPA2 PSK"
+            config SAMPLE_IOT_WIFI_AUTH_WPA_WPA2_PSK
+                bool "WPA WPA2 PSK"
+            config SAMPLE_IOT_WIFI_AUTH_WPA2_ENTERPRISE
+                bool "WPA2 ENTERPRISE"
+            config SAMPLE_IOT_WIFI_AUTH_WPA3_PSK
+                bool "WPA3 PSK"
+            config SAMPLE_IOT_WIFI_AUTH_WPA2_WPA3_PSK
+                bool "WPA2 WPA3 PSK"
+            config SAMPLE_IOT_WIFI_AUTH_WAPI_PSK
+                bool "WAPI PSK"
+        endchoice
+    endmenu
+
+    choice SAMPLE_IOT_WIFI_CONNECT_AP_SORT_METHOD
+        prompt "WiFi Connect AP Sort Method"
+        default SAMPLE_IOT_WIFI_CONNECT_AP_BY_SIGNAL
         help
-            GPIO pin number to be used as GPIO_INPUT_IO_1.
+            WiFi connect AP sort method:
+
+            If "Signal" is selected, sort matched APs by RSSI.
+
+            If "Security" is selected, sort matched APs by security mode.
+
+        config SAMPLE_IOT_WIFI_CONNECT_AP_BY_SIGNAL
+            bool "Signal"
+        config SAMPLE_IOT_WIFI_CONNECT_AP_BY_SECURITY
+            bool "Security"
+    endchoice
 
 endmenu

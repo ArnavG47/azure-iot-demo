@@ -69,7 +69,7 @@
 
 static bool g_timeInitialized = false;
 
-static xSemaphoreHandle s_semph_get_ip_addrs;
+static SemaphoreHandle_t s_semph_get_ip_addrs;
 static esp_ip4_addr_t s_ip_addr;
 
 static bool s_is_connected_to_internet = false;
