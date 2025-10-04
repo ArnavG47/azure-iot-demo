@@ -45,6 +45,26 @@
 #include "mbedtls/x509.h"
 #include "mbedtls/error.h"
 
+#ifdef __has_include
+    #if __has_include( "mbedtls/entropy_poll.h" )
+        #include "mbedtls/entropy_poll.h"
+        #define MBEDTLS_ENTROPY_POLL_FN    mbedtls_platform_entropy_poll
+    #elif __has_include( "mbedtls/esp_entropy.h" )
+        #include "mbedtls/esp_entropy.h"
+        #define MBEDTLS_ENTROPY_POLL_FN    mbedtls_hardware_poll
+    #endif
+#endif
+
+#ifndef MBEDTLS_ENTROPY_POLL_FN
+    #if defined( ESP_PLATFORM )
+        #include "mbedtls/esp_entropy.h"
+        #define MBEDTLS_ENTROPY_POLL_FN    mbedtls_hardware_poll
+    #else
+        #include "mbedtls/entropy_poll.h"
+        #define MBEDTLS_ENTROPY_POLL_FN    mbedtls_platform_entropy_poll
+    #endif
+#endif
+
 /*-----------------------------------------------------------*/
 
 /* Each transport defines the same NetworkContext. The user then passes their respective transport */
@@ -607,7 +627,7 @@ static TlsTransportStatus_t initMbedtls( mbedtls_entropy_context * pxEntropyCont
 
     /* Add a strong entropy source. At least one is required. */
     lMbedtlsError = mbedtls_entropy_add_source( pxEntropyContext,
-                                                mbedtls_platform_entropy_poll,
+                                                MBEDTLS_ENTROPY_POLL_FN,
                                                 NULL,
                                                 32,
                                                 MBEDTLS_ENTROPY_SOURCE_STRONG );
