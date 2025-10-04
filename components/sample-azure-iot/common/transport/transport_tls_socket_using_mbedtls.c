@@ -40,6 +40,7 @@
 #include "mbedtls/ctr_drbg.h"
 #include "mbedtls/entropy.h"
 #include "mbedtls/platform.h"
+#include "mbedtls/entropy_poll.h"
 #include "mbedtls/ssl.h"
 #include "mbedtls/threading.h"
 #include "mbedtls/x509.h"
@@ -607,7 +608,7 @@ static TlsTransportStatus_t initMbedtls( mbedtls_entropy_context * pxEntropyCont
 
     /* Add a strong entropy source. At least one is required. */
     lMbedtlsError = mbedtls_entropy_add_source( pxEntropyContext,
-                                                mbedtls_platform_entropy_poll,
+                                                mbedtls_hardware_poll,
                                                 NULL,
                                                 32,
                                                 MBEDTLS_ENTROPY_SOURCE_STRONG );
