@@ -1,6 +1,3 @@
-/* Copyright (c) Microsoft Corporation. All rights reserved. */
-/* SPDX-License-Identifier: MIT */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -65,7 +62,6 @@
     static const char* USER_TAG = "gpio";
     void button_detect_task();
     void led_task_setup();
-    //volatile uint32_t g_button_count = 0;
 
 static bool g_timeInitialized = false;
 
@@ -324,11 +320,11 @@ void app_main( void )
    // ESP_LOGW(USER_TAG, "about to start flashing cycle");
 
     uint32_t button_click_count = 0;
-
+    /*
     if(gpio_get_level(button_pin) == 0){
 
     }
-    /*for (uint16_t i = 0; i < 10; i++)
+    for (uint16_t i = 0; i < 10; i++)
     {
         ESP_LOGW(USER_TAG, "Light on");
         gpio_set_level(led_pin, 1);

@@ -44,6 +44,14 @@ Before project configuration and build, be sure to set the correct chip target u
 
 Build the project and flash it to the board, then run the monitor tool to view the serial output:
 
+build to a directory of your choice. The command below is an example directory, 
+feel free to choose your own. It is preferred to have the directory close to 
+your root directory.
+
+```bash
+idf.py --no-ccache -B "C:\espbuild" build
+```
+
 Run `idf.py -p PORT flash monitor` to build, flash and monitor the project.
 
 (To exit the serial monitor, type ``Ctrl-]``.)
