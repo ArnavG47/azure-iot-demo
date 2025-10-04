@@ -52,12 +52,17 @@
     #elif __has_include( "mbedtls/esp_entropy.h" )
         #include "mbedtls/esp_entropy.h"
         #define MBEDTLS_ENTROPY_POLL_FN    mbedtls_hardware_poll
-    #else
-        #error "No supported entropy poll header found"
     #endif
-#else
-    #include "mbedtls/esp_entropy.h"
-    #define MBEDTLS_ENTROPY_POLL_FN    mbedtls_hardware_poll
+#endif
+
+#ifndef MBEDTLS_ENTROPY_POLL_FN
+    #if defined( ESP_PLATFORM )
+        #include "mbedtls/esp_entropy.h"
+        #define MBEDTLS_ENTROPY_POLL_FN    mbedtls_hardware_poll
+    #else
+        #include "mbedtls/entropy_poll.h"
+        #define MBEDTLS_ENTROPY_POLL_FN    mbedtls_platform_entropy_poll
+    #endif
 #endif
 
 /*-----------------------------------------------------------*/
