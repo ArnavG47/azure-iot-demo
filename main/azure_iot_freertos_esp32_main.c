@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <string.h>
 
 #include "azure_sample_connection.h"
@@ -21,47 +22,63 @@
 #include "gpio_vars.h"
 /*-----------------------------------------------------------*/
 
-#define NR_OF_IP_ADDRESSES_TO_WAIT_FOR     1
+#ifdef CONFIG_EXAMPLE_CONNECT_IPV6
+#define NR_OF_IP_ADDRESSES_TO_WAIT_FOR    2
+#else
+#define NR_OF_IP_ADDRESSES_TO_WAIT_FOR    1
+#endif
 
 #if CONFIG_SAMPLE_IOT_WIFI_SCAN_METHOD_FAST
-    #define SAMPLE_IOT_WIFI_SCAN_METHOD    WIFI_FAST_SCAN
+#define SAMPLE_IOT_WIFI_SCAN_METHOD    WIFI_FAST_SCAN
 #elif CONFIG_SAMPLE_IOT_WIFI_SCAN_METHOD_ALL_CHANNEL
-    #define SAMPLE_IOT_WIFI_SCAN_METHOD    WIFI_ALL_CHANNEL_SCAN
+#define SAMPLE_IOT_WIFI_SCAN_METHOD    WIFI_ALL_CHANNEL_SCAN
 #endif
 
 #if CONFIG_SAMPLE_IOT_WIFI_CONNECT_AP_BY_SIGNAL
-    #define SAMPLE_IOT_WIFI_CONNECT_AP_SORT_METHOD    WIFI_CONNECT_AP_BY_SIGNAL
+#define SAMPLE_IOT_WIFI_CONNECT_AP_SORT_METHOD    WIFI_CONNECT_AP_BY_SIGNAL
 #elif CONFIG_SAMPLE_IOT_WIFI_CONNECT_AP_BY_SECURITY
-    #define SAMPLE_IOT_WIFI_CONNECT_AP_SORT_METHOD    WIFI_CONNECT_AP_BY_SECURITY
+#define SAMPLE_IOT_WIFI_CONNECT_AP_SORT_METHOD    WIFI_CONNECT_AP_BY_SECURITY
 #endif
 
 #if CONFIG_SAMPLE_IOT_WIFI_AUTH_OPEN
-    #define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_OPEN
+#define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_OPEN
 #elif CONFIG_SAMPLE_IOT_WIFI_AUTH_WEP
-    #define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WEP
+#define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WEP
 #elif CONFIG_SAMPLE_IOT_WIFI_AUTH_WPA_PSK
-    #define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA_PSK
+#define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA_PSK
 #elif CONFIG_SAMPLE_IOT_WIFI_AUTH_WPA2_PSK
-    #define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA2_PSK
+#define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA2_PSK
 #elif CONFIG_SAMPLE_IOT_WIFI_AUTH_WPA_WPA2_PSK
-    #define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA_WPA2_PSK
+#define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA_WPA2_PSK
 #elif CONFIG_SAMPLE_IOT_WIFI_AUTH_WPA2_ENTERPRISE
-    #define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA2_ENTERPRISE
+#define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA2_ENTERPRISE
 #elif CONFIG_SAMPLE_IOT_WIFI_AUTH_WPA3_PSK
-    #define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA3_PSK
+#define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA3_PSK
 #elif CONFIG_SAMPLE_IOT_WIFI_AUTH_WPA2_WPA3_PSK
-    #define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA2_WPA3_PSK
-    #elif CONFIG_SAMPLE_IOT_WIFI_AUTH_WAPI_PSK
-    #define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WAPI_PSK
-    #endif /* if CONFIG_SAMPLE_IOT_WIFI_AUTH_OPEN */
+#define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WPA2_WPA3_PSK
+#elif CONFIG_SAMPLE_IOT_WIFI_AUTH_WAPI_PSK
+#define SAMPLE_IOT_WIFI_SCAN_AUTH_MODE_THRESHOLD    WIFI_AUTH_WAPI_PSK
+#endif /* if CONFIG_SAMPLE_IOT_WIFI_AUTH_OPEN */
+
+#define SNTP_SERVER_FQDN                                "pool.ntp.org"
+/*-----------------------------------------------------------*/
     
-    #define SNTP_SERVER_FQDN                                "pool.ntp.org"
-    /*-----------------------------------------------------------*/
-    
-    static const char * TAG = "sample_azureiot";
-    static const char* USER_TAG = "gpio";
-    void button_detect_task();
-    void led_task_setup();
+static const char * TAG = "sample_azureiot";
+static const char * USER_TAG = "gpio";
+
+static void button_detect_task( void * pvParameters );
+static void led_task_setup( void );
+
+#ifdef CONFIG_EXAMPLE_CONNECT_IPV6
+static void on_wifi_connect( void * arg,
+                             esp_event_base_t event_base,
+                             int32_t event_id,
+                             void * event_data );
+static void on_got_ipv6( void * arg,
+                         esp_event_base_t event_base,
+                         int32_t event_id,
+                         void * event_data );
+#endif
 
 static bool g_timeInitialized = false;
 
@@ -125,6 +142,45 @@ static void on_wifi_disconnect( void * arg,
     ESP_ERROR_CHECK( err );
 }
 /*-----------------------------------------------------------*/
+
+#ifdef CONFIG_EXAMPLE_CONNECT_IPV6
+static void on_wifi_connect( void * arg,
+                             esp_event_base_t event_base,
+                             int32_t event_id,
+                             void * event_data )
+{
+    ( void ) event_base;
+    ( void ) event_id;
+    ( void ) event_data;
+
+    ESP_ERROR_CHECK( esp_netif_create_ip6_linklocal( ( esp_netif_t * ) arg ) );
+}
+/*-----------------------------------------------------------*/
+
+static void on_got_ipv6( void * arg,
+                         esp_event_base_t event_base,
+                         int32_t event_id,
+                         void * event_data )
+{
+    ( void ) arg;
+    ( void ) event_base;
+    ( void ) event_id;
+
+    ip_event_got_ip6_t * event = ( ip_event_got_ip6_t * ) event_data;
+
+    if( !is_our_netif( TAG, event->esp_netif ) )
+    {
+        ESP_LOGW( TAG, "Got IPv6 from another interface \"%s\": ignored",
+                  esp_netif_get_desc( event->esp_netif ) );
+        return;
+    }
+
+    ESP_LOGI( TAG, "Got IPv6 event: Interface \"%s\"",
+              esp_netif_get_desc( event->esp_netif ) );
+    xSemaphoreGive( s_semph_get_ip_addrs );
+}
+/*-----------------------------------------------------------*/
+#endif /* ifdef CONFIG_EXAMPLE_CONNECT_IPV6 */
 
 static esp_netif_t * get_example_netif_from_desc( const char * desc )
 {
@@ -340,41 +396,50 @@ uint64_t ullGetUnixTime( void )
     return now;
 }
 /*-----------------------------------------------------------*/
-TaskHandle_t ledHandle;
-static const uint8_t ledParametersToPass;
-void led_task_setup(){
-    ESP_LOGI(USER_TAG, "setting up leds");
+static TaskHandle_t ledHandle;
 
-    ESP_ERROR_CHECK(gpio_set_direction(led_pin, GPIO_MODE_OUTPUT));
-    gpio_set_direction(button_pin, GPIO_MODE_INPUT);
-    gpio_set_pull_mode(button_pin, GPIO_PULLUP_ONLY);
+static void led_task_setup( void )
+{
+    ESP_LOGI( USER_TAG, "setting up leds" );
 
-    xTaskCreate(button_detect_task, "button setup", 2048, 
-    &ledParametersToPass, 1, &ledHandle);
+    ESP_ERROR_CHECK( gpio_set_direction( led_pin, GPIO_MODE_OUTPUT ) );
+    ESP_ERROR_CHECK( gpio_set_direction( button_pin, GPIO_MODE_INPUT ) );
+    ESP_ERROR_CHECK( gpio_set_pull_mode( button_pin, GPIO_PULLUP_ONLY ) );
 
-    if(ledHandle == NULL){
-        ESP_LOGI(USER_TAG, "failed to setup ledTask");
-        vTaskDelete(ledHandle);
+    if( xTaskCreate( button_detect_task,
+                     "button setup",
+                     2048,
+                     NULL,
+                     1,
+                     &ledHandle ) != pdPASS )
+    {
+        ESP_LOGE( USER_TAG, "failed to create button task" );
     }
 }
 
-void button_detect_task(){
-    while(true){
-        if (gpio_get_level(button_pin) == 0){
-            
-            gpio_set_level(led_pin, 1);
-            vTaskDelay(pdMS_TO_TICKS(10));
-            while (gpio_get_level(button_pin) == 0)
-            {}
-            ESP_LOGI(USER_TAG, "button clicked");
+static void button_detect_task( void * pvParameters )
+{
+    ( void ) pvParameters;
+
+    while( true )
+    {
+        if( gpio_get_level( button_pin ) == 0 )
+        {
+            gpio_set_level( led_pin, 1 );
+            vTaskDelay( pdMS_TO_TICKS( 10 ) );
+
+            while( gpio_get_level( button_pin ) == 0 )
+            {
+                vTaskDelay( pdMS_TO_TICKS( 10 ) );
+            }
+
+            ESP_LOGI( USER_TAG, "button clicked" );
             g_button_count++;
-        } 
-        else{
-        gpio_set_level(led_pin, 0);
-       // ESP_LOGI(TAG_LED_TASK, "button not clicked");
-        vTaskDelay(pdMS_TO_TICKS(10));
         }
-    }  
-
-
+        else
+        {
+            gpio_set_level( led_pin, 0 );
+            vTaskDelay( pdMS_TO_TICKS( 10 ) );
+        }
+    }
 }
