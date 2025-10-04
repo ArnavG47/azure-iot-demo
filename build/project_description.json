@@ -1,12 +1,12 @@
 {
     "version":            "1.2",
     "project_name":       "azure-iot-demo",
-    "project_version":    "09bf7cb-dirty",
+    "project_version":    "bbf8064-dirty",
     "project_path":       "C:/Users/arnav/azure-iot-demo",
     "idf_path":           "C:/Users/arnav/esp/v5.5.1/esp-idf",
     "build_dir":          "C:/Users/arnav/azure-iot-demo/build",
     "config_file":        "C:/Users/arnav/azure-iot-demo/sdkconfig",
-    "config_defaults":    "",
+    "config_defaults":    "C:/Users/arnav/azure-iot-demo/sdkconfig.defaults",
     "bootloader_elf":     "C:/Users/arnav/azure-iot-demo/build/bootloader/bootloader.elf",
     "app_elf":            "azure-iot-demo.elf",
     "app_bin":            "azure-iot-demo.bin",
@@ -695,13 +695,13 @@
             "dir": "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot",
             "type": "LIBRARY",
             "lib": "__idf_sample-azure-iot",
-            "reqs": [ "mbedtls", "tcp_transport", "coreMQTT", "azure-sdk-for-c", "azure-iot-middleware-freertos" ],
+            "reqs": [ "mbedtls", "tcp_transport", "lwip", "coreMQTT", "azure-sdk-for-c", "azure-iot-middleware-freertos" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "C:/Users/arnav/azure-iot-demo/build/esp-idf/sample-azure-iot/libsample-azure-iot.a",
-            "sources": [ "C:/Users/arnav/azure-iot-demo/demos/sample_azure_iot/sample_azure_iot.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/backoff_algorithm.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/transport_tls_esp32.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/crypto_esp32.c" ],
-            "include_dirs": [ "C:/Users/arnav/azure-iot-demo/config", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot", "C:/Users/arnav/esp/v5.5.1/esp-idf/components/mbedtls/mbedtls/include", "C:/Users/arnav/azure-iot-demo/demos/common/transport", "C:/Users/arnav/azure-iot-demo/demos/common/utilities", "C:/Users/arnav/azure-iot-demo/demos/common/connection" ]
+            "sources": [ "C:/Users/arnav/azure-iot-demo/main/sample_azure_iot.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/backoff_algorithm.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/transport_tls_esp32.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/crypto_esp32.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/transport/transport_socket.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/transport/transport_tls_socket_using_mbedtls.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/transport/sockets_wrapper_lwip.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/utilities/azure_sample_crypto_mbedtls.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/utilities/mbedtls_freertos_port.c", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/logging/logging_compat.c" ],
+            "include_dirs": [ "C:/Users/arnav/azure-iot-demo/config", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/transport", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/utilities", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/logging", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/connection", "C:/Users/arnav/esp/v5.5.1/esp-idf/components/mbedtls/mbedtls/include", "C:/Users/arnav/esp/v5.5.1/esp-idf/components/mbedtls/mbedtls/include/mbedtls", "C:/Users/arnav/esp/v5.5.1/esp-idf/components/mbedtls/port/include", "C:/Users/arnav/esp/v5.5.1/esp-idf/components/mbedtls/port/mbedtls_rom" ]
         },
         "soc": {
             "alias": "idf::soc",
@@ -2145,11 +2145,11 @@
             "prefix": "idf",
             "dir": "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot",
             "lib": "__idf_sample-azure-iot",
-            "reqs": [ "mbedtls", "tcp_transport", "coreMQTT", "azure-sdk-for-c", "azure-iot-middleware-freertos" ],
+            "reqs": [ "mbedtls", "tcp_transport", "lwip", "coreMQTT", "azure-sdk-for-c", "azure-iot-middleware-freertos" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
-            "include_dirs": [ "C:/Users/arnav/azure-iot-demo/config", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot", "C:/Users/arnav/esp/v5.5.1/esp-idf/components/mbedtls/mbedtls/include", "C:/Users/arnav/azure-iot-demo/demos/common/transport", "C:/Users/arnav/azure-iot-demo/demos/common/utilities", "C:/Users/arnav/azure-iot-demo/demos/common/connection" ]
+            "include_dirs": [ "C:/Users/arnav/azure-iot-demo/config", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/transport", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/utilities", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/logging", "C:/Users/arnav/azure-iot-demo/components/sample-azure-iot/common/connection", "C:/Users/arnav/esp/v5.5.1/esp-idf/components/mbedtls/mbedtls/include", "C:/Users/arnav/esp/v5.5.1/esp-idf/components/mbedtls/mbedtls/include/mbedtls", "C:/Users/arnav/esp/v5.5.1/esp-idf/components/mbedtls/port/include", "C:/Users/arnav/esp/v5.5.1/esp-idf/components/mbedtls/port/mbedtls_rom" ]
         }
     },
     "debug_prefix_map_gdbinit": "",
