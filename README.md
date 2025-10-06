@@ -1,19 +1,23 @@
 # Azure IoT ESP32 Button Telemetry Demo
 
 This project adapts Microsoft's **Azure IoT middleware for FreeRTOS** sample to run on an ESP32 development board.
-In addition to the stock Wi-Fi, SNTP, and Azure IoT Hub connectivity flow, it adds a dedicated FreeRTOS task that
+In addition to the stock Wi-Fi and Azure IoT Hub connectivity flow, it adds a dedicated FreeRTOS task that
 monitors a hardware push-button, toggles an LED for user feedback, and streams button click counts to the cloud.
 
 ## What this sample demonstrates
 
-- Connecting an ESP32 to Wi-Fi, synchronizing time with SNTP, and creating a secure MQTT connection to Azure IoT Hub.
-- Reading a GPIO button from a FreeRTOS task (`button_detect_task`) that debounces the input, lights an LED on
-  GPIO5, and increments the shared `g_button_count` counter whenever the button wired to GPIO21 is pressed.
+- Connecting an ESP32 to Wi-Fi and creating a secure MQTT connection to Azure IoT Hub.
+- Reading a GPIO pin input using a FreeRTOS task (`button_detect_task`) that debounces the input then turns on an LED on GPIO5,
+  and increments the shared `g_button_count` counter whenever the button wired to GPIO21 is pressed.
 - Publishing telemetry that includes both the JSON payload (`{"deviceId": "<device>", "buttonCount": <n>}`)
   and a custom application property named `Clicks` whose value mirrors the running button count. This allows you to
   visualize presses directly in IoT Hub metrics, Event Hub consumers, or downstream services.
 
 The result is an end-to-end path from a physical interaction on the ESP32 to Azure IoT Hub telemetry.
+
+this project also taught me critical git version control use to freely experiment and learn how to implement my desired functionality. 
+Beyond git, I also developed knowledge of how to dissect complicated code by reading API reference sheets, read function definitions,
+and work with AI to effectively implement and learn about the project. 
 
 ## Repository layout
 
@@ -52,10 +56,10 @@ The result is an end-to-end path from a physical interaction on the ESP32 to Azu
 ```bash
 idf.py set-target esp32        # Or another supported target
 idf.py build
-idf.py -p /dev/ttyUSB0 flash monitor
+idf.py -p <COM8> flash monitor
 ```
 
-Replace `/dev/ttyUSB0` with the serial port that matches your development board. Press `Ctrl+]` to exit the monitor.
+Replace `<COM8>` with the serial port that matches your development board.
 
 On boot the firmware connects to Wi-Fi, synchronizes time, and starts the Azure IoT Hub client. The log stream will show
 entries such as `button clicked` whenever the button task detects a press. Each press also updates the LED (if present)
